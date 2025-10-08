@@ -145,8 +145,12 @@ def separate_file(args) -> NoReturn:
     separator = build_separator(config_yaml, checkpoint_path, device)
 
     # paths
-    if os.path.dirname(output_path) != "":
-        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    output_wav_path = pathlib.Path(output_path)
+
+    if output_wav_path.suffix.lower() != '.wav':
+        output_wav_path = output_wav_path.with_suffix('.wav')
+
+    output_wav_path.parent.mkdir(parents=True, exist_ok=True)
 
     # Load audio.
     audio = load_audio(audio_path=audio_path, mono=False, sample_rate=sample_rate)
@@ -169,16 +173,15 @@ def separate_file(args) -> NoReturn:
     if scale_volume:
         sep_audio /= np.max(np.abs(sep_audio))
 
-    # Write out separated audio.
-    tmp_wav_path = output_path + ".wav"
-    soundfile.write(file=tmp_wav_path, data=sep_audio.T, samplerate=sample_rate)
-
-    os.system(
-        'ffmpeg -y -loglevel panic -i "{}" "{}"'.format(tmp_wav_path, output_path)
+    soundfile.write(
+        file=str(output_wav_path),
+        data=sep_audio.T.astype(np.float32, copy=False),
+        samplerate=sample_rate,
+        subtype='FLOAT',
+        format='WAV',
     )
-    os.system('rm "{}"'.format(tmp_wav_path))
 
-    print('Write out to {}'.format(output_path))
+    print('Write out to {}'.format(output_wav_path))
 
 
 def separate_dir(args) -> NoReturn:
@@ -243,18 +246,18 @@ def separate_dir(args) -> NoReturn:
         if scale_volume:
             sep_audio /= np.max(np.abs(sep_audio))
 
-        output_path = os.path.join(
-            outputs_dir, '{}.mp3'.format(pathlib.Path(audio_name).stem)
-        )
+            output_path = pathlib.Path(outputs_dir) / (
+                '{}.wav'.format(pathlib.Path(audio_name).stem)
+            )
 
-        tmp_wav_path = '{}.wav'.format(output_path)
-        soundfile.write(file=tmp_wav_path, data=sep_audio.T, samplerate=sample_rate)
-
-        os.system(
-            'ffmpeg -y -loglevel panic -i "{}" "{}"'.format(tmp_wav_path, output_path)
-        )
-        os.system('rm "{}"'.format(tmp_wav_path))
-        print('{} / {}, Write out to {}'.format(n, audios_num, output_path))
+            soundfile.write(
+                file=str(output_path),
+                data=sep_audio.T.astype(np.float32, copy=False),
+                samplerate=sample_rate,
+                subtype='FLOAT',
+                format='WAV',
+            )
+            print('{} / {}, Write out to {}'.format(n, audios_num, output_path))
 
 
 if __name__ == "__main__":
