@@ -246,18 +246,18 @@ def separate_dir(args) -> NoReturn:
         if scale_volume:
             sep_audio /= np.max(np.abs(sep_audio))
 
-            output_path = pathlib.Path(outputs_dir) / (
-                '{}.wav'.format(pathlib.Path(audio_name).stem)
-            )
+        output_path = pathlib.Path(outputs_dir) / (
+            '{}.wav'.format(pathlib.Path(audio_name).stem)
+        )
 
-            soundfile.write(
-                file=str(output_path),
-                data=sep_audio.T.astype(np.float32, copy=False),
-                samplerate=sample_rate,
-                subtype='FLOAT',
-                format='WAV',
-            )
-            print('{} / {}, Write out to {}'.format(n, audios_num, output_path))
+        soundfile.write(
+            file=str(output_path),
+            data=sep_audio.T.astype(np.float32, copy=False),
+            samplerate=sample_rate,
+            subtype='FLOAT',
+            format='WAV',
+        )
+        print('{} / {}, Write out to {}'.format(n, audios_num, output_path))
 
 
 if __name__ == "__main__":
