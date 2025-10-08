@@ -1,10 +1,10 @@
-from typing import Dict, List, NoReturn, Optional
+from typing import Dict, List, Optional
 
 import h5py
 import librosa
 import numpy as np
 import torch
-from pytorch_lightning.core.datamodule import LightningDataModule
+from pytorch_lightning import LightningDataModule
 
 from bytesep.data.augmentors import Augmentor
 from bytesep.data.samplers import DistributedSamplerWrapper
@@ -33,7 +33,7 @@ class DataModule(LightningDataModule):
         self.num_workers = num_workers
         self.distributed = distributed
 
-    def setup(self, stage: Optional[str] = None) -> NoReturn:
+    def setup(self, stage: Optional[str] = None) -> None:
         r"""called on every device."""
 
         # SegmentSampler is used for sampling segment indexes for training.

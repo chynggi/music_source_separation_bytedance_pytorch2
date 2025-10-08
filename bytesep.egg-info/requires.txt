@@ -1,10 +1,9 @@
---extra-index-url https://download.pytorch.org/whl/cu126
-torch
-torchaudio
-torchvision
+torch<2.9.0,>=2.8.0
+torchaudio<2.9.0,>=2.8.0
+torchvision<0.24.0,>=0.23.0
 pytorch-lightning==2.4.0
 torchmetrics>=1.4.0
-numpy>=1.24,<3
+numpy<3,>=1.24
 scipy>=1.10
 librosa>=0.10.2
 museval==0.4.0

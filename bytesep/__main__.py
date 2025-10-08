@@ -18,7 +18,7 @@ LOCAL_CHECKPOINTS_DIR = os.path.join(pathlib.Path.home(), "bytesep_data")
 def download_checkpoints(args) -> NoReturn:
     r"""Download checkpoints and config yaml files from Zenodo."""
 
-    zenodo_dir = "https://zenodo.org/record/5804160/files"
+    zenodo_dir = "https://zenodo.org/record/5804160/files/"
     local_checkpoints_dir = LOCAL_CHECKPOINTS_DIR
 
     # Download checkpoints.
@@ -34,6 +34,7 @@ def download_checkpoints(args) -> NoReturn:
     for checkpoint_name in checkpoint_names:
 
         remote_checkpoint_link = os.path.join(zenodo_dir, checkpoint_name)
+        print("Downloading from {}".format(remote_checkpoint_link))
         local_checkpoint_link = os.path.join(
             local_checkpoints_dir, checkpoint_name.split("?")[0]
         )

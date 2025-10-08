@@ -1,7 +1,7 @@
 import logging
 import os
 import time
-from typing import Dict, List, NoReturn
+from typing import Dict, List
 
 import librosa
 import musdb
@@ -9,7 +9,7 @@ import museval
 import numpy as np
 import pytorch_lightning as pl
 import torch.nn as nn
-from pytorch_lightning.utilities import rank_zero_only
+from pytorch_lightning.utilities.rank_zero import rank_zero_only
 
 from bytesep.callbacks.base import SaveCheckpointsCallback
 from bytesep.dataset_creation.pack_audios_to_hdf5s.musdb18 import preprocess_audio
@@ -169,7 +169,14 @@ class Musdb18EvaluationCallback(pl.Callback):
         self.separator = Separator(model, self.segment_samples, batch_size, device)
 
     @rank_zero_only
-    def on_batch_end(self, trainer: pl.Trainer, _) -> NoReturn:
+    def on_train_batch_end(
+        self,
+        trainer: pl.Trainer,
+        _pl_module: pl.LightningModule,
+        _outputs,
+        _batch,
+        batch_idx: int,
+    ) -> None:
         r"""Evaluate separation SDRs of audio recordings."""
         global_step = trainer.global_step
 
@@ -372,7 +379,14 @@ class Musdb18ConditionalEvaluationCallback(pl.Callback):
         self.separator = Separator(model, self.segment_samples, batch_size, device)
 
     @rank_zero_only
-    def on_batch_end(self, trainer: pl.Trainer, _) -> NoReturn:
+    def on_train_batch_end(
+        self,
+        trainer: pl.Trainer,
+        _pl_module: pl.LightningModule,
+        _outputs,
+        _batch,
+        batch_idx: int,
+    ) -> None:
         r"""Evaluate separation SDRs of audio recordings."""
         global_step = trainer.global_step
 

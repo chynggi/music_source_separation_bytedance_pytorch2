@@ -1,11 +1,10 @@
 import logging
 import os
-from typing import NoReturn
 
 import pytorch_lightning as pl
 import torch
 import torch.nn as nn
-from pytorch_lightning.utilities import rank_zero_only
+from pytorch_lightning.utilities.rank_zero import rank_zero_only
 
 
 class SaveCheckpointsCallback(pl.Callback):
@@ -28,8 +27,15 @@ class SaveCheckpointsCallback(pl.Callback):
         os.makedirs(self.checkpoints_dir, exist_ok=True)
 
     @rank_zero_only
-    def on_batch_end(self, trainer: pl.Trainer, _) -> NoReturn:
-        r"""Save checkpoint."""
+    def on_train_batch_end(
+        self,
+        trainer: pl.Trainer,
+        _pl_module: pl.LightningModule,
+        _outputs,
+        _batch,
+        batch_idx: int,
+    ) -> None:
+        r"""Save checkpoint once per rank-zero training step."""
         global_step = trainer.global_step
 
         if global_step % self.save_step_frequency == 0:

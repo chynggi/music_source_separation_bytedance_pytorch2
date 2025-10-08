@@ -38,7 +38,7 @@ class LitSourceSeparation(pl.LightningModule):
         self.learning_rate = learning_rate
         self.lr_lambda = lr_lambda
 
-    def training_step(self, batch_data_dict: Dict, batch_idx: int) -> torch.float:
+    def training_step(self, batch_data_dict: Dict, batch_idx: int) -> torch.Tensor:
         r"""Forward a mini-batch data to model, calculate loss function, and
         train for one step. A mini-batch data is evenly distributed to multiple
         devices (if there are) for parallel training.

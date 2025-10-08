@@ -8,12 +8,22 @@ Vocals and accompaniment separation: https://www.youtube.com/watch?v=WH4m5HYzHsg
 
 ## Installation
 
-Install Python 3.7. 
+Install Python 3.10 or newer.
 
-Sometimes the installation of bytesep will fail when using higher versions of Python. Suggest to use conda (or other environment manage tools) to manage the packages.
+Create and activate a virtual environment (conda, venv, etc.) to keep the
+dependencies isolated. Install the CUDA-enabled PyTorch wheel (2.8.0 with CUDA
+12.6) and project requirements:
 
 ```bash
-pip install bytesep==0.1.1
+python -m pip install --upgrade pip
+python -m pip install --extra-index-url https://download.pytorch.org/whl/cu126 torch==2.8.0+cu126 torchaudio==2.8.0+cu126 torchvision==0.19.0+cu126
+python -m pip install -r requirements.txt
+```
+
+The library can also be installed as a package:
+
+```bash
+python -m pip install .
 ```
 
 ## Separation

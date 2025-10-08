@@ -6,7 +6,7 @@ from functools import partial
 from typing import Dict, List, NoReturn
 
 import pytorch_lightning as pl
-from pytorch_lightning.plugins import DDPPlugin
+from pytorch_lightning.strategies import DDPStrategy
 import torch
 
 from bytesep.callbacks import get_callbacks
@@ -313,22 +313,39 @@ def train(args) -> NoReturn:
         lr_lambda=lr_lambda,
     )
 
-    # trainer
-    trainer = pl.Trainer(
-        checkpoint_callback=False,
-        gpus=gpus,
-        callbacks=callbacks,
-        max_steps=early_stop_steps,
-        accelerator="ddp",
-        sync_batchnorm=True,
-        precision=precision,
-        replace_sampler_ddp=False,
-        plugins=[DDPPlugin(find_unused_parameters=False)],
-        profiler='simple',
-    )
+    def _normalize_precision(value) -> str:
+        if isinstance(value, int):
+            value = str(value)
+        if value == "16":
+            return "16-mixed"
+        if value == "32":
+            return "32-true"
+        return value
+
+    trainer_kwargs = {
+        'enable_checkpointing': False,
+        'callbacks': callbacks,
+        'max_steps': early_stop_steps,
+        'sync_batchnorm': gpus > 1,
+        'precision': _normalize_precision(precision),
+        'replace_sampler_ddp': False,
+        'profiler': 'simple',
+        'logger': logger,
+    }
+
+    if gpus > 0:
+        trainer_kwargs['accelerator'] = 'gpu'
+        trainer_kwargs['devices'] = gpus
+        if gpus > 1:
+            trainer_kwargs['strategy'] = DDPStrategy(find_unused_parameters=False)
+    else:
+        trainer_kwargs['accelerator'] = 'cpu'
+        trainer_kwargs['devices'] = 1
+
+    trainer = pl.Trainer(**trainer_kwargs)
 
     # Fit, evaluate, and save checkpoints.
-    trainer.fit(pl_model, data_module)
+    trainer.fit(pl_model, datamodule=data_module)
 
 
 if __name__ == "__main__":

@@ -30,7 +30,9 @@ Segmentation fault: 11
 
 Solution
 
-Try to use python 3.7. This error sometimes occur when using python 3.9.
+Ensure you are running with Python 3.10 or newer. CUDA-enabled builds of
+PyTorch 2.8 require a modern interpreter, and earlier versions may crash with
+segmentation faults.
 
 ## Question
 
